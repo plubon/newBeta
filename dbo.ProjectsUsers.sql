@@ -1,0 +1,28 @@
+
+/****** Object:  Table [dbo].[ProjectUsers]    Script Date: 2015-05-24 18:00:49 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ProjectUsers](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ProjectId] [int] NOT NULL,
+	[UserId] [nvarchar](128) NULL,
+ CONSTRAINT [PK_dbo.ProjectUsers] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+CONSTRAINT FK_ProjectUsersProjects FOREIGN KEY (ProjectId) 
+    REFERENCES dbo.Projects (Id) 
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+CONSTRAINT FK_ProjectUsersUsers FOREIGN KEY (UserId)
+    REFERENCES dbo.AspNetUsers (Id) 
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+) ON [PRIMARY] 
+
+GO
+

@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Comments">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="AuthorsId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="Text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="TaskId" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Tasks" Relationship="Self.FK_CommentsTasks" FromRole="Comments" ToRole="Tasks" />
+  </EntityType>
+  <EntityType Name="Projects">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="OwnersId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="ManagersId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="ProjectUsers" Relationship="Self.FK_ProjectUsersProjects" FromRole="Projects" ToRole="ProjectUsers" />
+    <NavigationProperty Name="Tasks" Relationship="Self.FK_TasksProjects" FromRole="Projects" ToRole="Tasks" />
+  </EntityType>
+  <EntityType Name="ProjectUsers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProjectId" Type="Int32" Nullable="false" />
+    <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Projects" Relationship="Self.FK_ProjectUsersProjects" FromRole="ProjectUsers" ToRole="Projects" />
+  </EntityType>
+  <EntityType Name="Subtasks">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="State" Type="Boolean" />
+    <Property Name="TaskId" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Tasks" Relationship="Self.FK_SubtasksTasks" FromRole="Subtasks" ToRole="Tasks" />
+  </EntityType>
+  <EntityType Name="TaskConnections">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="PreviousTask" Type="Int32" Nullable="false" />
+    <Property Name="NextTask" Type="Int32" />
+    <NavigationProperty Name="Tasks" Relationship="Self.FK_TaskConnectionsNextTask" FromRole="TaskConnections" ToRole="Tasks" />
+    <NavigationProperty Name="Tasks1" Relationship="Self.FK_TaskConnectionsPreviousTask" FromRole="TaskConnections" ToRole="Tasks" />
+  </EntityType>
+  <EntityType Name="Tasks">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ProjectId" Type="Int32" Nullable="false" />
+    <Property Name="AssignedTo" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="EndTime" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Completion" Type="Int32" Nullable="false" />
+    <Property Name="Color" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Priority" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Comments" Relationship="Self.FK_CommentsTasks" FromRole="Tasks" ToRole="Comments" />
+    <NavigationProperty Name="Projects" Relationship="Self.FK_TasksProjects" FromRole="Tasks" ToRole="Projects" />
+    <NavigationProperty Name="Subtasks" Relationship="Self.FK_SubtasksTasks" FromRole="Tasks" ToRole="Subtasks" />
+    <NavigationProperty Name="TaskConnections" Relationship="Self.FK_TaskConnectionsNextTask" FromRole="Tasks" ToRole="TaskConnections" />
+    <NavigationProperty Name="TaskConnections1" Relationship="Self.FK_TaskConnectionsPreviousTask" FromRole="Tasks" ToRole="TaskConnections" />
+  </EntityType>
+  <Association Name="FK_CommentsTasks">
+    <End Role="Tasks" Type="Self.Tasks" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Comments" Type="Self.Comments" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Tasks">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Comments">
+        <PropertyRef Name="TaskId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProjectUsersProjects">
+    <End Role="Projects" Type="Self.Projects" Multiplicity="1" />
+    <End Role="ProjectUsers" Type="Self.ProjectUsers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Projects">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="ProjectUsers">
+        <PropertyRef Name="ProjectId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_TasksProjects">
+    <End Role="Projects" Type="Self.Projects" Multiplicity="1" />
+    <End Role="Tasks" Type="Self.Tasks" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Projects">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Tasks">
+        <PropertyRef Name="ProjectId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_SubtasksTasks">
+    <End Role="Tasks" Type="Self.Tasks" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Subtasks" Type="Self.Subtasks" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Tasks">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Subtasks">
+        <PropertyRef Name="TaskId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_TaskConnectionsNextTask">
+    <End Role="Tasks" Type="Self.Tasks" Multiplicity="0..1" />
+    <End Role="TaskConnections" Type="Self.TaskConnections" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Tasks">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="TaskConnections">
+        <PropertyRef Name="NextTask" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_TaskConnectionsPreviousTask">
+    <End Role="Tasks" Type="Self.Tasks" Multiplicity="1" />
+    <End Role="TaskConnections" Type="Self.TaskConnections" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Tasks">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="TaskConnections">
+        <PropertyRef Name="PreviousTask" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="Entities1" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Comments" EntityType="Self.Comments" />
+    <EntitySet Name="Projects" EntityType="Self.Projects" />
+    <EntitySet Name="ProjectUsers" EntityType="Self.ProjectUsers" />
+    <EntitySet Name="Subtasks" EntityType="Self.Subtasks" />
+    <EntitySet Name="TaskConnections" EntityType="Self.TaskConnections" />
+    <EntitySet Name="Tasks" EntityType="Self.Tasks" />
+    <AssociationSet Name="FK_CommentsTasks" Association="Self.FK_CommentsTasks">
+      <End Role="Tasks" EntitySet="Tasks" />
+      <End Role="Comments" EntitySet="Comments" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProjectUsersProjects" Association="Self.FK_ProjectUsersProjects">
+      <End Role="Projects" EntitySet="Projects" />
+      <End Role="ProjectUsers" EntitySet="ProjectUsers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_TasksProjects" Association="Self.FK_TasksProjects">
+      <End Role="Projects" EntitySet="Projects" />
+      <End Role="Tasks" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK_SubtasksTasks" Association="Self.FK_SubtasksTasks">
+      <End Role="Tasks" EntitySet="Tasks" />
+      <End Role="Subtasks" EntitySet="Subtasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK_TaskConnectionsNextTask" Association="Self.FK_TaskConnectionsNextTask">
+      <End Role="Tasks" EntitySet="Tasks" />
+      <End Role="TaskConnections" EntitySet="TaskConnections" />
+    </AssociationSet>
+    <AssociationSet Name="FK_TaskConnectionsPreviousTask" Association="Self.FK_TaskConnectionsPreviousTask">
+      <End Role="Tasks" EntitySet="Tasks" />
+      <End Role="TaskConnections" EntitySet="TaskConnections" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
